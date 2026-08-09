@@ -70,11 +70,11 @@ const xlsxColIndex=ref=>{const letters=String(ref||"").match(/^[A-Z]+/)?.[0]||""
 const xlsxRange=ref=>{const[a,b]=String(ref||"").split(":"),parse=value=>{const m=String(value).match(/^([A-Z]+)(\d+)$/);return m?{c:xlsxColIndex(m[1]),r:Number(m[2])-1}:null};return{a:parse(a),b:parse(b||a)}};
 async function importCurriculumXlsx(file){
   if(!window.JSZip)throw new Error("Excel 압축 모듈을 불러오지 못했습니다");
-  const zip=await JSZip.loadAsync(await file.arrayBuffer()),sheetFile=zip.file("xl/worksheets/sheet1.xml"),metadataFile=zip.file("xl/curriculum-state.json");
+  const zip=await JSZip.loadAsync(await file.arrayBuffer()),sheetFile=zip.file("xl/worksheets/sheet1.xml"),metadataFile=zip.file("docProps/custom.xml"),parser=new DOMParser();
   if(!sheetFile)throw new Error("편제표 시트를 찾지 못했습니다");
   let embedded=null;
-  if(metadataFile){try{embedded=JSON.parse(await metadataFile.async("string"))}catch(error){console.warn("편제표 구조 정보를 읽지 못했습니다",error)}}
-  const parser=new DOMParser(),sheetXml=parser.parseFromString(await sheetFile.async("string"),"application/xml"),shared=[];
+  if(metadataFile){try{const customDoc=parser.parseFromString(await metadataFile.async("string"),"application/xml"),property=[...customDoc.getElementsByTagName("property")].find(node=>node.getAttribute("name")==="CurriculumState");if(property)embedded=JSON.parse(property.textContent||"")}catch(error){console.warn("편제표 구조 정보를 읽지 못했습니다",error)}}
+  const sheetXml=parser.parseFromString(await sheetFile.async("string"),"application/xml"),shared=[];
   const sharedFile=zip.file("xl/sharedStrings.xml");
   if(sharedFile){const doc=parser.parseFromString(await sharedFile.async("string"),"application/xml");[...doc.getElementsByTagName("si")].forEach(si=>shared.push([...si.getElementsByTagName("t")].map(t=>t.textContent||"").join("")))}
   const cells=new Map();
