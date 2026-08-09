@@ -28,13 +28,13 @@ window.exportCurriculumXlsx=async model=>{
   
   const headerStart=2;
   const labels=["구분","교과(군)","과목","유형","기본학점","운영학점"];
-  row=pushRow(25);labels.forEach((label,col)=>set(row,col,label,headerStyle));labels.forEach((_,col)=>merge(headerStart,col,headerStart+2,col));
-  for(let grade=0;grade<3;grade++){const start=creditStart+grade*model.tracks.length*2,end=start+model.tracks.length*2-1,style=grade<2?styleId({...baseStyle,fill:1,bold:true,right:sectionBorder}):headerStyle;set(row,start,`${grade+1}학년`,style);merge(headerStart,start,headerStart,end)}
-  set(row,gradingCol,"성적처리",headerStyle);merge(headerStart,gradingCol,headerStart+2,gradingCol);
+  row=pushRow(25);labels.forEach((label,col)=>set(row,col,label,col===5?styleId({...baseStyle,fill:1,bold:true,right:sectionBorder}):headerStyle));labels.forEach((_,col)=>merge(headerStart,col,headerStart+2,col));
+  for(let grade=0;grade<3;grade++){const start=creditStart+grade*model.tracks.length*2,end=start+model.tracks.length*2-1,style=styleId({...baseStyle,fill:1,bold:true,right:sectionBorder});set(row,start,`${grade+1}학년`,style);merge(headerStart,start,headerStart,end)}
+  set(row,gradingCol,"성적처리",styleId({...baseStyle,fill:1,bold:true,left:sectionBorder}));merge(headerStart,gradingCol,headerStart+2,gradingCol);
   set(row,noteCol,"비고",headerStyle);merge(headerStart,noteCol,headerStart+2,noteCol);
   row=pushRow(25);
-  for(let grade=0;grade<3;grade++)model.tracks.forEach((track,t)=>{const start=creditStart+grade*model.tracks.length*2+t*2,style=grade<2&&t===model.tracks.length-1?styleId({...baseStyle,fill:2,bold:true,right:sectionBorder}):trackStyle;set(row,start,track,style);merge(headerStart+1,start,headerStart+1,start+1)});
-  row=pushRow(25);for(let col=0;col<model.creditCount;col++){const gradeEnd=(col+1)%(model.tracks.length*2)===0&&col<model.creditCount-1;set(row,creditStart+col,`${col%2+1}학기`,gradeEnd?styleId({...baseStyle,fill:3,bold:true,right:sectionBorder}):semesterStyle)}
+  for(let grade=0;grade<3;grade++)model.tracks.forEach((track,t)=>{const start=creditStart+grade*model.tracks.length*2+t*2,style=t===model.tracks.length-1?styleId({...baseStyle,fill:2,bold:true,right:sectionBorder}):trackStyle;set(row,start,track,style);merge(headerStart+1,start,headerStart+1,start+1)});
+  row=pushRow(25);for(let col=0;col<model.creditCount;col++){const gradeEnd=(col+1)%(model.tracks.length*2)===0;set(row,creditStart+col,`${col%2+1}학기`,gradeEnd?styleId({...baseStyle,fill:3,bold:true,right:sectionBorder}):semesterStyle)}
 
   const dataStart=rows.length;
   model.rows.forEach((item,index)=>{
@@ -42,21 +42,22 @@ window.exportCurriculumXlsx=async model=>{
     const current=pushRow(29),common={align:"center",border:gridBorder,top,bottom};
     set(current,0,item.section,styleId(common));set(current,1,item.group,styleId(common));
     set(current,2,item.courseName,styleId(common));set(current,3,item.type,styleId(common));set(current,4,item.baseCredits,styleId(common));
-    set(current,5,item.operationCredits,styleId(common));
+    set(current,5,item.operationCredits,styleId({...common,right:sectionBorder}));
     
     // [수정] 빈 학기 칸도 동일한 common 스타일(테두리, 그룹선 포함)을 적용하여 생성
     for(let col=0;col<model.creditCount;col++){
-      const gradeEnd=(col+1)%(model.tracks.length*2)===0&&col<model.creditCount-1;
+      const gradeEnd=(col+1)%(model.tracks.length*2)===0;
       set(current,creditStart+col,item.credits[col]??"",styleId({...common,right:gradeEnd?sectionBorder:common.right}));
     }
     
-    set(current,gradingCol,item.grading,styleId(common));set(current,noteCol,item.note,styleId(common));
+    set(current,gradingCol,item.grading,styleId({...common,left:sectionBorder}));set(current,noteCol,item.note,styleId(common));
   });
   
   model.fieldMerges.forEach(item=>merge(dataStart+item.start,item.col,dataStart+item.end,item.col));
   model.creditMerges.forEach(item=>{
     const r=dataStart+item.start,c=creditStart+item.column,top=model.rows[item.start]?.choiceStart?sectionBorder:undefined,bottom=model.rows[item.end]?.choiceEnd?sectionBorder:undefined;
-    rows[r].cells[c]={value:item.isPrimary===false?"":`[택${item.pick}]\n${item.totalCredits}`,style:styleId({align:"center",border:gridBorder,top,bottom,fillColor:item.color,bold:true,wrap:true})};
+    const gradeEnd=(item.column+1)%(model.tracks.length*2)===0;
+    rows[r].cells[c]={value:item.isPrimary===false?"":`[택${item.pick}]\n${item.totalCredits}`,style:styleId({align:"center",border:gridBorder,top,bottom,right:gradeEnd?sectionBorder:undefined,fillColor:item.color,bold:true,wrap:true})};
     merge(r,c,dataStart+item.end,c);
   });
 
@@ -70,24 +71,24 @@ window.exportCurriculumXlsx=async model=>{
   model.activities.forEach((activity,index)=>{
     const current=pushRow(29);
     if(index===0){set(current,0,"창의적 체험활동",activitySectionStyle);merge(activityStart,0,activityStart+2,1)}
-    set(current,2,activity.name,activityStyle);merge(activityStart+index,2,activityStart+index,5);
+    set(current,2,activity.name,styleId({...baseStyle,fill:6,bold:true,right:sectionBorder}));merge(activityStart+index,2,activityStart+index,5);
     
     // [수정] 창체 영역 빈 학기 칸 처리
     for(let col=0;col<model.creditCount;col++){
-      const gradeEnd=(col+1)%(model.tracks.length*2)===0&&col<model.creditCount-1;
+      const gradeEnd=(col+1)%(model.tracks.length*2)===0;
       set(current,creditStart+col,activity.credits[col]??"",gradeEnd?styleId({...baseStyle,fill:6,bold:true,right:sectionBorder}):activityStyle);
     }
     
-    set(current,gradingCol,"",activityStyle);set(current,noteCol,"",activityStyle);
+    set(current,gradingCol,"",styleId({...baseStyle,fill:6,bold:true,left:sectionBorder}));set(current,noteCol,"",activityStyle);
   });
   
-  row=pushRow(28);set(row,0,"과정별·학기별 이수학점 합계",totalStyle);merge(rows.length-1,0,rows.length-1,5);
+  row=pushRow(28);set(row,0,"과정별·학기별 이수학점 합계",styleId({...baseStyle,fill:4,bold:true,right:sectionBorder}));merge(rows.length-1,0,rows.length-1,5);
   // [수정] 합계 영역 빈 학기 칸 처리
   for(let col=0;col<model.creditCount;col++){
-    const gradeEnd=(col+1)%(model.tracks.length*2)===0&&col<model.creditCount-1;
+    const gradeEnd=(col+1)%(model.tracks.length*2)===0;
     set(row,creditStart+col,model.totals[col]??"",gradeEnd?styleId({...baseStyle,fill:4,bold:true,right:sectionBorder}):totalStyle);
   }
-  set(row,gradingCol,`총 이수학점 ${model.grandTotal??0}`,totalStyle);
+  set(row,gradingCol,`총 이수학점 ${model.grandTotal??0}`,styleId({...baseStyle,fill:4,bold:true,left:sectionBorder}));
   set(row,noteCol,"",totalStyle);
   merge(rows.length-1,gradingCol,rows.length-1,noteCol);
 
