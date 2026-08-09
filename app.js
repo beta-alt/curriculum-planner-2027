@@ -35,7 +35,7 @@ function migrate(count){
   state.activityTracks=count;
 }
 function save(){const value=JSON.stringify({...state,selected:[]});localStorage.setItem(planStorageKey(activePlan),value);if(activePlan==="entrants")localStorage.setItem("curriculum-offline-v1",value);localStorage.setItem("curriculum-active-plan",activePlan);$("save-state").textContent=new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"})+" 자동 저장"}
-function renderPlanTabs(){document.body.dataset.plan=activePlan;$("plan-tabs").innerHTML=planTabs.map(tab=>`<button type="button" class="plan-tab ${tab.id===activePlan?'active':''}" data-plan-tab="${tab.id}" aria-selected="${tab.id===activePlan}">${tab.label}</button>`).join("")}
+function renderPlanTabs(){document.body.dataset.plan=activePlan;$("plan-tabs").innerHTML=planTabs.map(tab=>`<button type="button" class="plan-tab ${tab.id===activePlan?'active':''}" data-plan-tab="${tab.id}" aria-selected="${tab.id===activePlan}">${tab.label}</button>`).join("");const heading=document.querySelector(".workspace .title h2");if(heading)heading.textContent=activePlan==="three-grades"?"학년·과정별 편성표":"학년·과정별 편제표"}
 function switchPlan(id){if(id===activePlan||!planTabs.some(tab=>tab.id===id))return;save();activePlan=id;localStorage.setItem("curriculum-active-plan",activePlan);state=createPlanState();const saved=storedPlan(activePlan);if(saved)state={...state,...saved,selected:[],selectionMode:false};insertAfterId=null;undoStack.length=0;setup();migrate(tracks().length);renderPlanTabs();render();toast(`${planTabs.find(tab=>tab.id===id).label}로 전환했습니다`)}
 const courseOf=name=>courses.find(c=>c.name===name&&String(c.curriculum)==="2022");
 const courseGroup=c=>c&&/^(한국사1|한국사2)$/.test(c.name)?"한국사":c?.group;
