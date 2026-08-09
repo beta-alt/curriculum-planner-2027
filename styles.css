@@ -20,6 +20,7 @@ tbody tr:first-child>td,.choice-block-start>td,.choice-boundary-top,.credit.merg
 .title{align-items:center;gap:12px}.title>div{flex:0 0 245px;min-width:0}.title>div>span{min-width:0}.title h2{white-space:nowrap}.title p{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.title nav{flex:1;justify-content:flex-end;gap:7px;white-space:nowrap}.title nav button,.title nav small{flex:0 0 auto;white-space:nowrap}.title nav button{padding:8px 10px}#school-row-btn{margin-left:12px}
 .target-credit{display:flex;align-items:center;gap:6px;margin:0 0 12px;font-size:11px;color:var(--muted)}.target-credit input{width:72px;height:30px;border:1px solid var(--line);border-radius:7px;background:#fff;padding:0 8px;text-align:right;color:var(--ink);font-weight:900}.target-credit b{font-size:11px;color:var(--ink)}
 .operation-boundary{border-right:1px solid #7c887f!important}.grading-boundary{border-left:1px solid #7c887f!important}.grade-boundary{border-right:1px solid #7c887f!important}.credit.operation-boundary{border-right:0!important}
+tfoot tr:last-child td:first-child{border-right:1px solid #7c887f!important}tfoot tr:last-child td:last-child{border-left:1px solid #7c887f!important}
 
 @media print{tfoot{display:table-row-group}}
 
