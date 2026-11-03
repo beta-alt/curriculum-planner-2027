@@ -206,7 +206,17 @@ function unmergeFlexible(){
   state.creditHighlights=(state.creditHighlights||[]).filter(item=>!groupIds.has(item.choiceGroupId));
   state.selected=[];render();toast("선택군 병합과 색상을 해제했습니다");
 }
-$("save-btn").onclick=()=>{const plans=allPlansSnapshot(),bundle={version:2,type:"curriculum-planner-two-tabs",activePlan,plans};download("2027_편제표_전체작업.json",JSON.stringify(bundle,null,2),"application/json");toast("두 편제표의 작업 내용을 함께 저장했습니다")};
+$("save-btn").onclick=async()=>{
+  const button=$("save-btn"),status=$("drive-save-status");
+  const plans=allPlansSnapshot(),savedAt=new Date(),academicYear=window.CURRICULUM_DRIVE_CONFIG?.academicYear||2027;
+  const bundle={version:2,type:"curriculum-planner-two-tabs",activePlan,plans,academicYear,schoolName:school().name,savedAt:savedAt.toISOString()};
+  const name=window.CurriculumDrive.filename(academicYear,school().name,savedAt),content=JSON.stringify(bundle,null,2);
+  download(name,content,"application/json");
+  button.disabled=true;button.textContent="Drive 저장 중…";status.textContent="PC 파일 저장 요청 완료 · Google Drive 저장 중…";
+  try{await window.CurriculumDrive.upload(name,content);status.textContent="PC 파일 저장 요청 완료 · Google Drive 저장 완료: "+name;toast("두 편제표 작업을 Google Drive에도 저장했습니다")}
+  catch(error){console.error(error);status.textContent="PC 파일 저장 요청 완료 · "+error.message;toast("Drive 저장을 완료하지 못했습니다. 아래 상태를 확인해 주세요.")}
+  finally{button.disabled=false;button.textContent="작업 저장"}
+};
 $("file-input").onchange=async e=>{const file=e.target.files?.[0];try{const imported=await loadWorkFile(file);remember();if(imported.plans){planTabs.forEach(tab=>{const plan=imported.plans[tab.id];if(plan?.rows)localStorage.setItem(planStorageKey(tab.id),JSON.stringify({...plan,selected:[],selectionMode:false}))});activePlan=planTabs.some(tab=>tab.id===imported.activePlan)?imported.activePlan:"entrants";localStorage.setItem("curriculum-active-plan",activePlan);state={...createPlanState(activePlan),...(storedPlan(activePlan)||{}),selected:[],selectionMode:false}}else state={...state,...imported,selected:[],selectionMode:false};insertAfterId=null;undoStack.length=0;setup();migrate(tracks().length);renderPlanTabs();render();toast(imported.plans?"두 편제표 작업을 모두 불러왔습니다":/\.xlsx$/i.test(file.name)?"Excel 편제표를 불러왔습니다":"작업을 불러왔습니다")}catch(error){console.error(error);toast("불러올 수 있는 JSON 또는 Excel 파일이 아닙니다")}finally{e.target.value=""}};
 $("plan-tabs").onclick=e=>{const button=e.target.closest("[data-plan-tab]");if(button)switchPlan(button.dataset.planTab)};
 setup();migrate(tracks().length);renderPlanTabs();bind();bindResize();render();syncCourseCatalog();

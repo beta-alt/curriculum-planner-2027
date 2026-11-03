@@ -3,6 +3,7 @@
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>2027 교육과정 편제표 편집기 · 오프라인</title><link rel="stylesheet" href="styles.css"></head>
 <body>
   <header><div class="brand"><b>편</b><span><strong>교육과정 편제실</strong><small>2027 · 오프라인 버전</small></span></div><div class="actions"><span id="save-state">자동 저장</span><button id="load-btn">불러오기</button><button id="save-btn">작업 저장</button><input id="file-input" type="file" accept=".json,.xlsx,application/json,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden></div></header>
+  <p id="drive-save-status" role="status" aria-live="polite" style="margin:8px 24px;font-size:13px;overflow-wrap:anywhere"></p>
   <nav id="plan-tabs" class="plan-tabs" aria-label="편제표 선택"></nav>
   <main>
     <section class="hero"><div><small>OFFLINE CURRICULUM PLANNER</small><h1><span id="hero-school-title">2027학년도</span><br><em>교육과정 편제표</em></h1><p>학교와 과정을 선택하고 과목·학점을 입력하면 합계와 배치 상태를 즉시 확인합니다.</p></div><aside><span>현재 편성</span><strong id="grand-total">0<small> 학점</small></strong><label class="target-credit"><span>기준 총학점</span><input id="target-credits" type="number" min="192" max="999" step="1" value="192"><b>학점</b></label><div><i id="progress"></i></div><small id="progress-label">192학점 대비 0%</small></aside></section>
@@ -11,5 +12,5 @@
     <section class="checks"><article><h2>자동 점검</h2><div id="checks"></div></article><article><h2>과정별 합계</h2><div id="track-totals"></div></article></section>
   </main>
   <datalist id="course-list"></datalist><div id="toast"></div>
-  <script src="data.js"></script><script src="jszip.min.js"></script><script src="excel-export.js?v=20260810-total-vertical-boundary-v40"></script><script src="app.js?v=20260810-total-vertical-boundary-v40"></script>
+  <script src="data.js"></script><script src="jszip.min.js"></script><script src="excel-export.js?v=20260810-total-vertical-boundary-v40"></script><script src="drive-config.js"></script><script src="drive-save.js"></script><script src="app.js?v=20260810-total-vertical-boundary-v40"></script>
 </body></html>
