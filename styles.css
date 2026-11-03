@@ -28,6 +28,22 @@ tfoot tr:last-child td:first-child{border-right:1px solid #7c887f!important}tfoo
 /* Excel conditional-formatting parity: neutral by default, warnings only when rules match. */
 .credit,.credit.active,.operation-credit,.activity-row .activity-credit{background:#fff;color:#111}.credit input,.operation-credit input,.auto-edit.number,.activity-row .activity-credit input{color:#111}.credit.cf-credit-warning{background:#fce4d6}.credit.cf-credit-warning input{color:#f00;font-weight:900}.operation-credit.cf-zero{background:#ffc7ce}.operation-credit.cf-zero input{color:#9c0006;font-weight:900}.operation-credit.cf-high{background:#ffc000}.operation-credit.cf-high input{color:#f00;font-weight:900}.cf-total-warning{color:#f00!important;font-weight:900}
 
+/* Keep the table inside the viewport; scroll only the table when needed. */
+main{max-width:1920px;width:100%;min-width:0}
+.workspace,.title,.title nav{min-width:0;max-width:100%}
+.title{flex-wrap:wrap}.title nav{flex-wrap:wrap;overflow:visible;justify-content:flex-start}
+.table-wrap{width:100%;max-width:100%;min-width:0;overflow-x:scroll;overflow-y:auto}
+.table-wrap table{min-width:100%;table-layout:fixed}
+.table-wrap td,.table-wrap th{min-width:0;overflow-wrap:anywhere}
+.table-wrap th{white-space:normal;padding:6px 2px}
+.table-wrap td input,.table-wrap td select{min-width:0;max-width:100%;padding-left:3px;padding-right:3px;font-size:11px}
+.table-wrap .credit{min-width:0;width:auto}
+#table-scroll-top{width:100%;overflow-x:scroll;overflow-y:hidden;height:20px;border:1px solid #bac2bb;border-radius:5px;margin-bottom:6px}
+#table-scroll-top>div{height:1px}
+.table-scroll-hint{font-size:12px;color:var(--muted);margin:0 0 8px}
+@media(max-width:900px){.title>div{flex-basis:auto}.title nav{width:100%;flex-basis:100%}.actions button:not(.primary){display:inline-block}header{height:auto;min-height:76px;flex-wrap:wrap;gap:8px;padding-top:10px;padding-bottom:10px}}
+@media print{#table-scroll-top,.table-scroll-hint{display:none}.table-wrap{overflow:visible;max-height:none}}
+
 /* 3개학년 편성표: 녹색 음영을 부드러운 연노랑으로 구분 */
 [data-plan="three-grades"] .track-edit{background:#fff2c9}
 [data-plan="three-grades"] th{background:#fff3c4}
