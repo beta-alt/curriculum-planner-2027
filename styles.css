@@ -57,3 +57,5 @@ main{max-width:1920px;width:100%;min-width:0}
 [data-plan="three-grades"] .merge-field.merged-field:not(.selected){background:#fff8dc}
 
 .catalog-panel{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:12px 0;padding:12px;background:#fff;border:1px solid var(--line);border-radius:10px;font-size:12px}.catalog-panel a{color:var(--green)}.catalog-panel span{flex:1;min-width:180px;color:var(--muted)}@media print{.catalog-panel{display:none}}
+
+.table-wrap select.course.course-mismatch{color:#c62828;font-weight:800}.table-wrap select.course option{color:var(--ink);font-weight:400}.table-wrap select.course option.course-mismatch{color:#c62828;font-weight:800}
